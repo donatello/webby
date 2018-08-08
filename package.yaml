@@ -1,0 +1,42 @@
+name:                webby
+version:             0.1.0.0
+license-file: LICENSE
+category:            Web
+extra-source-files:
+- README.md
+
+ghc-options: -Wall -Werror
+
+dependencies:
+  - base >= 4.7 && < 5
+  - aeson
+  - binary
+  - bytestring
+  - fast-logger
+  - formatting
+  - http-api-data
+  - http-types
+  - monad-logger
+  - mtl
+  - protolude
+  - resourcet
+  - text
+  - unliftio
+  - wai
+  - wai-extra
+  - warp
+
+source-dirs:
+  - src
+
+library:
+  exposed-modules:
+    - Webby
+
+default-extensions:
+  - FlexibleInstances
+  - MultiParamTypeClasses
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - ScopedTypeVariables
+  - TupleSections
