@@ -227,17 +227,12 @@ mkWebbyApp appEnv routes = do
 
 text2PathSegments :: Text -> [PathSegment]
 text2PathSegments path =
-    let mayCapture capName = if ":" `T.isPrefixOf` capName
-                             then Just $ T.drop 1 $ capName
-                             else Nothing
+    let toSegment s = maybe (Literal s) Capture $
+                      ":" `T.stripPrefix` s
 
-        mkSegs [] = []
-        mkSegs (p:ps) = maybe (Literal p) Capture
-                        (mayCapture p) : mkSegs ps
+        path' = maybe path identity $ T.stripPrefix "/" path
 
-        fixPath = bool identity (drop 1) (T.isPrefixOf "/" path)
-
-    in mkSegs $ fixPath $ T.splitOn "/" path
+    in map toSegment $ bool (T.splitOn "/" path') [] $ path' == ""
 
 -- | Create a route for a user-provided HTTP request method, pattern
 -- and handler function.
