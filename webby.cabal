@@ -1,0 +1,91 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.1.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 0b37776960e49df9bf569d40764d16eb7a437b075480d77616adb78f735c1e1d
+
+name:           webby
+version:        0.1.0.0
+category:       Web
+license:        Apache-2.0
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+library
+  hs-source-dirs:
+      src
+  default-extensions: FlexibleInstances MultiParamTypeClasses NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
+  ghc-options: -Wall -Werror
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , binary
+    , bytestring
+    , fast-logger
+    , formatting
+    , http-api-data
+    , http-types
+    , monad-logger
+    , mtl
+    , protolude
+    , resourcet
+    , text
+    , unliftio
+    , unordered-containers
+    , wai
+    , wai-extra
+    , warp
+  exposed-modules:
+      Webby
+  other-modules:
+      Webby.Route
+      Webby.Server
+      Webby.Types
+      WebbyPrelude
+      Paths_webby
+  default-language: Haskell2010
+
+test-suite webby-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Webby
+      Webby.Route
+      Webby.Server
+      Webby.Types
+      WebbyPrelude
+      Webby.RouteTest
+      Paths_webby
+  hs-source-dirs:
+      src
+      test
+  default-extensions: FlexibleInstances MultiParamTypeClasses NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
+  ghc-options: -Wall -Werror -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , base >=4.7 && <5
+    , binary
+    , bytestring
+    , fast-logger
+    , formatting
+    , http-api-data
+    , http-types
+    , monad-logger
+    , mtl
+    , protolude
+    , resourcet
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , text
+    , unliftio
+    , unordered-containers
+    , wai
+    , wai-extra
+    , warp
+    , webby
+  default-language: Haskell2010
