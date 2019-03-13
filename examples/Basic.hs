@@ -20,17 +20,18 @@ import           Webby
 
 main :: IO ()
 main = do
-    let routes = [ get "/api/a" (text "a")
-                 , get "/api/b" (text "b")
-                 , post "/api/capture/:id" (do idVal :: Int <- getCapture "id"
-                                               text $ T.pack $ show idVal
-                                           )
+    let routes = [ get "/api/a" (text "a\n")
+                 , get "/api/b" (text "b\n")
+                 , post "/api/capture/:id"
+                   (do idVal :: Int <- getCapture "id"
+                       text $ (T.pack (show idVal) `T.append` "\n")
+                   )
                  , get "/api/showEnv" (do env <- getAppEnv
-                                          json env
+                                          text env
                                       )
                  , get "/aaah" (liftIO $ E.throwString "oops!")
                  ]
 
-    webbyApp <- mkWebbyApp (3::Int) routes
+    webbyApp <- mkWebbyApp ("MyEnv\n" :: T.Text) routes
     putStrLn "Starting webserver..."
     W.runEnv 7000 webbyApp

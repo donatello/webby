@@ -40,5 +40,25 @@ You can try the example above, by cloning the repo and running the
 example:
 
 ``` shell
-examples/Basic.hs
+$ examples/Basic.hs
+```
+
+In another shell, let's `curl` the server:
+
+``` shell
+$ curl http://localhost:7000/api/a
+a
+$ curl http://localhost:7000/api/b
+b
+$ curl -XPOST http://localhost:7000/api/capture/32
+32
+$ curl http://localhost:7000/api/showEnv
+MyEnv
+$ curl http://localhost:7000/aaah
+Control.Exception.Safe.throwString called with:
+
+oops!
+Called from:
+  throwString (examples/Basic.hs:32:42 in main:Main)$ curl http://localhost:7000/api/a
+a
 ```
