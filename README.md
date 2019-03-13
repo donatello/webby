@@ -59,5 +59,5 @@ Control.Exception.Safe.throwString called with:
 
 oops!
 Called from:
-  throwString (examples/Basic.hs:32:42 in main:Main)$ curl http://localhost:7000/api/a
+  throwString (examples/Basic.hs:32:42 in main:Main)
 ```
