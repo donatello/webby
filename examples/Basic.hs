@@ -1,14 +1,14 @@
-# Webby
+#!/usr/bin/env stack
+{- stack
+   --resolver lts-13.12
+   runghc
+   --package unliftio
+   --package warp
+   --package webby
+-}
 
-An easy to use Haskell web-server inspired by Scotty.
-
-# Build
-
-Clone the repo and run `stack build`
-
-# Example
-
-``` haskell
+{-# LANGUAGE OverloadedStrings   #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Main where
 
 import qualified Data.Text                as T
@@ -34,11 +34,3 @@ main = do
     webbyApp <- mkWebbyApp (3::Int) routes
     putStrLn "Starting webserver..."
     W.runEnv 7000 webbyApp
-```
-
-You can try the example above, by cloning the repo and running the
-example:
-
-``` shell
-examples/Basic.hs
-```
