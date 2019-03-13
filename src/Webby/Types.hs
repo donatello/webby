@@ -3,6 +3,7 @@ module Webby.Types where
 
 import qualified Control.Monad.Logger  as Log
 import qualified Data.Binary.Builder   as Bu
+import qualified Data.HashMap.Strict   as H
 import qualified Data.Text             as T
 import           System.Log.FastLogger (FormattedTime)
 import qualified System.Log.FastLogger as FLog
@@ -25,7 +26,7 @@ defaultWyResp = WyResp status200 [] (Right Bu.empty) False
 -- | The reader environment used by the web framework. It is
 -- parameterized by the application's environment data type.
 data WEnv appEnv = WEnv { weResp      :: Conc.MVar WyResp
-                        , weCaptures  :: [(Text, Text)]
+                        , weCaptures  :: Captures
                         , weRequest   :: Request
                         , weAppEnv    :: appEnv
                         , weLoggerSet :: FLog.LoggerSet
@@ -70,9 +71,8 @@ data RoutePattern = RoutePattern Method [PathSegment]
 -- `RoutePattern` to a handler function.
 type Routes appEnv = [(RoutePattern, WebbyM appEnv ())]
 
--- | Captures are simply extracted path elements. TODO: extend this to
--- be more useful?
-type Captures = [(Text, Text)]
+-- | Captures are simply extracted path elements in a HashMap
+type Captures = H.HashMap Text Text
 
 data PathSegment = Literal Text
                  | Capture Text
@@ -95,12 +95,10 @@ data WebbyError = WebbyJSONParseError Text
                 deriving Show
 
 instance U.Exception WebbyError where
-    displayException (WebbyParamParseError pName msg) = T.unpack $ sformat
-                                                        ("Param parse error: " % st % " " % st)
-                                                        pName msg
+    displayException (WebbyParamParseError pName msg) =
+        T.unpack $ sformat ("Param parse error: " % st % " " % st) pName msg
 
     displayException (WebbyJSONParseError _) = "Invalid JSON body"
 
-    displayException (WebbyMissingCapture capName) = T.unpack $ sformat
-                                                     (st % " missing")
-                                                     capName
+    displayException (WebbyMissingCapture capName) =
+        T.unpack $ sformat (st % " missing") capName

@@ -10,6 +10,7 @@ module Webby
   , put
 
   -- * Captures
+  , Captures
   , captures
   , getCapture
 

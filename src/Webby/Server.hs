@@ -5,6 +5,7 @@ import qualified Control.Monad.Logger       as Log
 import qualified Data.Aeson                 as A
 import qualified Data.Binary.Builder        as Bu
 import qualified Data.ByteString.Lazy       as LB
+import qualified Data.HashMap.Strict        as H
 import qualified Data.List                  as L
 import qualified Data.Text                  as T
 import           Network.HTTP.Types.URI     (queryToQueryText)
@@ -16,6 +17,7 @@ import           Web.HttpApiData
 
 import           WebbyPrelude
 
+import           Webby.Route
 import           Webby.Types
 
 -- | Retrieve the app environment given to the application at
@@ -28,15 +30,15 @@ runAppEnv appFn = do
     env <- getAppEnv
     runReaderT appFn env
 
--- | Retrieve all path captures (TODO: extend?)
-captures :: WebbyM appEnv [(Text, Text)]
+-- | Retrieve all path captures
+captures :: WebbyM appEnv Captures
 captures = asks weCaptures
 
 -- | Retrieve a particular capture (TODO: extend?)
 getCapture :: (FromHttpApiData a) => Text -> WebbyM appEnv a
 getCapture capName = do
     cs <- captures
-    case L.lookup capName cs of
+    case H.lookup capName cs of
         Nothing  -> throwIO $ WebbyMissingCapture capName
         Just cap -> either (throwIO . WebbyParamParseError capName . show)
                     return $
@@ -145,32 +147,20 @@ stream s = do
     Conc.modifyMVar_ wVar $
         \wr -> return $ wr { wrRespData = Left s }
 
-matchPattern :: Request -> RoutePattern -> Maybe Captures
-matchPattern r (RoutePattern mthd ps)
-    | requestMethod r == mthd = doesMatch ps (pathInfo r)
-    | otherwise = Nothing
-  where
-    doesMatch :: [PathSegment] -> [Text] -> Maybe Captures
-    doesMatch [] [] = Just []
-    doesMatch [] _ = Nothing
-    doesMatch _ [] = Nothing
-    doesMatch (Literal x:xs) (y:ys) | x == y = doesMatch xs ys
-                                    | otherwise = Nothing
-    doesMatch (Capture x:xs) (y:ys) = let c = (x, y)
-                                      in fmap (c:) $ doesMatch xs ys
-
--- | TODO: Request matching is currently naive. It is not performant
--- for a large number of routes.
-matchRequest :: Request -> Routes env -> Maybe (Captures, WebbyM env ())
-matchRequest req routes = do
-    let rM = headMay $ filter (\(_, _, k) -> isJust k) $
-             map (\(pat, h) -> (pat, h, matchPattern req pat)) routes
-    (_, h, csM) <- rM
-    cs <- csM
-    return (cs, h)
+-- | matchRequest uses a looks up a data structure built from the
+-- configured routes.
+matchRequest :: Request -> HashTrie env -> Maybe (Captures, WebbyM env ())
+matchRequest req trie =
+    let mthd = requestMethod req
+        path = pathInfo req
+        lookupPath = decodeUtf8Lenient mthd : path
+    in lookupItem lookupPath trie
 
 errorResponse404 :: WebbyM appEnv ()
 errorResponse404 = setStatus status404
+
+invalidRoutesErr :: [Char]
+invalidRoutesErr = "Invalid route specification: contains duplicate routes or routes with overlapping capture patterns."
 
 -- | Use this function, to create a WAI application. It takes a
 -- user/application defined `appEnv` data type and a list of
@@ -179,14 +169,16 @@ errorResponse404 = setStatus status404
 mkWebbyApp :: appEnv -> Routes appEnv -> IO Application
 mkWebbyApp appEnv routes = do
     lset <- FLog.newStdoutLoggerSet FLog.defaultBufSize
-    return $ mkApp lset
+    routeTrie <- maybe (E.throwString invalidRoutesErr) return $
+                 mkRoutesHashTrie routes
+    return $ mkApp lset routeTrie
 
   where
 
-    mkApp lset req respond = do
+    mkApp lset trie req respond = do
         let defaultHandler = errorResponse404
-            (cs, handler) = fromMaybe ([], defaultHandler) $
-                            matchRequest req routes
+            (cs, handler) = fromMaybe (H.empty, defaultHandler) $
+                            matchRequest req trie
 
         timeFn <- newTimeCache "%Y-%m-%dT%H:%M:%S "
         wEnv <- do v <- Conc.newMVar defaultWyResp
