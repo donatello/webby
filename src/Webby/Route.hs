@@ -10,10 +10,11 @@ import           Webby.Types
 import           WebbyPrelude
 
 
-data HashTrie a = HashTrie { handlerMay :: Maybe (WebbyM a ())
+data HashTrie a = HashTrie { handlerMay :: Maybe a
                            , litSubtree :: H.HashMap Text (HashTrie a)
                            , capMay     :: Maybe (Text, HashTrie a)
                            }
+                deriving (Eq, Show)
 
 emptyHashTrie :: HashTrie a
 emptyHashTrie = HashTrie Nothing H.empty Nothing
@@ -28,7 +29,7 @@ emptyHashTrie = HashTrie Nothing H.empty Nothing
 --
 -- Note that @/person/:name@ and @/address/:name@ are not overlapping
 -- captures as they have different leading components.
-addItem :: ([PathSegment], WebbyM a ()) -> HashTrie a -> Maybe (HashTrie a)
+addItem :: ([PathSegment], a) -> HashTrie a -> Maybe (HashTrie a)
 addItem ([], !handler) !trie =
     -- If there are no path segments remaining, set handler at the
     -- current node of the HashTrie
@@ -57,7 +58,7 @@ addItem (b:bs, !handler) !trie =
 -- | lookupItem lookup the path segments in the tree and returns a
 -- handler if a match is found along with a map of captures found.
 lookupItem :: [Text] -> HashTrie a
-           -> Maybe (Captures, WebbyM a ())
+           -> Maybe (Captures, a)
 lookupItem !bs' !trie' = lookupItemWithCaptures bs' trie' H.empty
   where
     lookupItemWithCaptures [] !trie !h = do hdlr <- handlerMay trie
@@ -77,7 +78,7 @@ routePattern2PathSegments :: RoutePattern -> [PathSegment]
 routePattern2PathSegments (RoutePattern mthd ps) =
     (Literal $ decodeUtf8Lenient mthd) : ps
 
-mkRoutesHashTrie :: Routes a -> Maybe (HashTrie a)
+mkRoutesHashTrie :: Routes a -> Maybe (HashTrie (WebbyM a ()))
 mkRoutesHashTrie rs = foldl combine (Just emptyHashTrie) rs
   where
 

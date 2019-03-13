@@ -7,11 +7,13 @@ import           Webby.Server
 import           Webby.Types
 import           WebbyPrelude
 
+import           Webby.RouteTest
+
 main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Webby Tests" [text2PathSegmentsTest]
+tests = testGroup "Webby Tests" [text2PathSegmentsTest, testHashTrie]
 
 text2PathSegmentsTest :: TestTree
 text2PathSegmentsTest = testGroup "text2PathSegments" [text2PathSegmentsUT]

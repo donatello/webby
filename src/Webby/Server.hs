@@ -149,7 +149,7 @@ stream s = do
 
 -- | matchRequest uses a looks up a data structure built from the
 -- configured routes.
-matchRequest :: Request -> HashTrie env -> Maybe (Captures, WebbyM env ())
+matchRequest :: Request -> HashTrie a -> Maybe (Captures, a)
 matchRequest req trie =
     let mthd = requestMethod req
         path = pathInfo req
