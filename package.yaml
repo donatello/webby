@@ -1,11 +1,27 @@
 name:                webby
 version:             0.1.0.0
+synopsis:            A super-simple web server framework
+description: |
+  A super-simple, easy to use web server framework inspired by
+  Scotty. The goals of the project are: (1) Be easy to use (2) Allow
+  graceful exception handling (3) Parse request parameters easily and
+  in a typed manner.
 license-file: LICENSE
 category:            Web
+maintainer: aditya.mmy@gmail.com
 extra-source-files:
 - README.md
 
-ghc-options: -Wall -Werror
+ghc-options: -Wall
+
+flags:
+  dev:
+    manual: true
+    default: false
+
+when:
+  - condition: flag(dev)
+    ghc-options: -Werror
 
 dependencies:
   - base >= 4.7 && < 5
