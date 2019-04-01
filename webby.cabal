@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4f81f8a7502f5cce8bbeea48a56ceb91bc52428d3b45594d74a22c035108c56c
+-- hash: 5ecf0d478c20a67c5266ec5ff894a292bc6ee4f7ceeea8f25fdb35984a93449a
 
 name:           webby
 version:        0.1.0.0
@@ -31,24 +31,21 @@ library
   default-extensions: FlexibleInstances MultiParamTypeClasses NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
   ghc-options: -Wall
   build-depends:
-      aeson
+      aeson >=1.2 && <1.5
     , base >=4.7 && <5
-    , binary
-    , bytestring
-    , fast-logger
-    , formatting
-    , http-api-data
-    , http-types
-    , monad-logger
-    , mtl
-    , protolude
-    , resourcet
-    , text
-    , unliftio
+    , binary >=0.8 && <0.9
+    , bytestring >=0.10 && <0.11
+    , fast-logger >=2.4 && <2.5
+    , formatting >=6.3 && <6.4
+    , http-api-data >=0.3 && <0.5
+    , http-types >=0.12 && <0.13
+    , monad-logger >=0.3 && <0.4
+    , protolude >=0.2 && <0.3
+    , resourcet >=1.2 && <1.3
+    , text >=1.2 && <1.3
+    , unliftio >=0.2.7 && <0.3
     , unordered-containers
-    , wai
-    , wai-extra
-    , warp
+    , wai >=3.2 && <3.3
   if flag(dev)
     ghc-options: -Werror
   exposed-modules:
@@ -78,27 +75,24 @@ test-suite webby-test
   default-extensions: FlexibleInstances MultiParamTypeClasses NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      aeson
+      aeson >=1.2 && <1.5
     , base >=4.7 && <5
-    , binary
-    , bytestring
-    , fast-logger
-    , formatting
-    , http-api-data
-    , http-types
-    , monad-logger
-    , mtl
-    , protolude
-    , resourcet
+    , binary >=0.8 && <0.9
+    , bytestring >=0.10 && <0.11
+    , fast-logger >=2.4 && <2.5
+    , formatting >=6.3 && <6.4
+    , http-api-data >=0.3 && <0.5
+    , http-types >=0.12 && <0.13
+    , monad-logger >=0.3 && <0.4
+    , protolude >=0.2 && <0.3
+    , resourcet >=1.2 && <1.3
     , tasty
     , tasty-hunit
     , tasty-quickcheck
-    , text
-    , unliftio
+    , text >=1.2 && <1.3
+    , unliftio >=0.2.7 && <0.3
     , unordered-containers
-    , wai
-    , wai-extra
-    , warp
+    , wai >=3.2 && <3.3
     , webby
   if flag(dev)
     ghc-options: -Werror
