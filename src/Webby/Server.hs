@@ -9,6 +9,7 @@ import qualified Data.HashMap.Strict        as H
 import qualified Data.List                  as L
 import qualified Data.Text                  as T
 import           Network.HTTP.Types.URI     (queryToQueryText)
+import           Network.Wai.Internal       (getRequestBodyChunk)
 import qualified System.Log.FastLogger      as FLog
 import           System.Log.FastLogger.Date (newTimeCache)
 import qualified UnliftIO.Concurrent        as Conc
@@ -99,6 +100,12 @@ header n = do
 
 request :: WebbyM appEnv Request
 request = asks weRequest
+
+-- | Returns an action that returns successive chunks of the rquest
+-- body. It returns an empty bytestring after the request body is
+-- consumed.
+getRequestBodyChunkAction :: WebbyM appEnv (WebbyM appEnv ByteString)
+getRequestBodyChunkAction = (liftIO . getRequestBodyChunk) <$> asks weRequest
 
 headers :: WebbyM appEnv [Header]
 headers = requestHeaders <$> request

@@ -24,6 +24,7 @@ module Webby
   , params
   , request
   , requestBodyLength
+  , getRequestBodyChunkAction
 
   -- * Response modification
   , setStatus
