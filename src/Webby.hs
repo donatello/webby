@@ -36,6 +36,7 @@ module Webby
 
   -- * Application
   , mkWebbyApp
+  , Application
 
   -- * Application context
   , WEnv
@@ -51,3 +52,5 @@ module Webby
 
 import           Webby.Server
 import           Webby.Types
+
+import           Network.Wai  (Application)
