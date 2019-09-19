@@ -134,6 +134,12 @@ text txt = do
         \wr -> return $ wr { wrRespData = Right $ Bu.fromByteString $
                                           encodeUtf8 txt }
 
+-- | Return the raw request body as a lazy bytestring
+requestBodyLBS :: WebbyM appEnv LByteString
+requestBodyLBS = do
+    req <- request
+    liftIO $ lazyRequestBody req
+
 jsonData :: A.FromJSON a => WebbyM appEnv a
 jsonData = do
    req <- request
