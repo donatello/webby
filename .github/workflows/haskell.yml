@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install dependencies
-      run: cabal install --only-dependencies --enable-tests
+      run: cabal --version && cabal install --only-dependencies --enable-tests
     - name: Build
       run: |
         cabal configure --enable-tests
