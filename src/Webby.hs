@@ -23,6 +23,7 @@ module Webby
   , param_
   , params
   , request
+  , requestBodyLBS
   , requestBodyLength
   , getRequestBodyChunkAction
 
