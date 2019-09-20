@@ -9,11 +9,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Install dependencies
-      run: cabal --version && cabal install --only-dependencies --enable-tests
-    - name: Build
-      run: |
-        cabal configure --enable-tests
-        cabal build
-    - name: Run tests
-      run: cabal test
+    - name: Setup Haskell Tools
+    - run: curl -sSL https://get.haskellstack.org/ | sh
+    - name: Build library
+      run: stack build
+    - name: Run Tests
+      run: stack test
