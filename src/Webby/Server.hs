@@ -259,3 +259,7 @@ get = mkRoute methodGet
 -- and handler.
 put :: Text -> WebbyM appEnv () -> (RoutePattern, WebbyM appEnv ())
 put = mkRoute methodPut
+
+-- | Create a route for a DELETE request method, given path pattern and handler.
+delete :: Text -> WebbyM appEnv () -> (RoutePattern, WebbyM appEnv ())
+delete = mkRoute methodDelete

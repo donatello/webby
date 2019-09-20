@@ -8,6 +8,7 @@ module Webby
   , post
   , get
   , put
+  , delete
 
   -- * Captures
   , Captures

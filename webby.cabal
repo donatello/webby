@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.1.
+-- This file has been generated from package.yaml by hpack version 0.31.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: caf3466bf704ca914cdc5415a14e4d717e7bdb21f42b4fc2ce0869bf6309d74b
+-- hash: f7235144640693879da4d296edf9b11b50f14f4523aabfd4005cc1a70b7c48b1
 
 name:           webby
-version:        0.1.1
+version:        0.1.2
 synopsis:       A super-simple web server framework
 description:    A super-simple, easy to use web server framework inspired by
                 Scotty. The goals of the project are: (1) Be easy to use (2) Allow
