@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f31e358f56cab247d8a40116ed142502fdcb0bb62c0f18ce5552dd680f8cbda4
+-- hash: 8b1f369db62b5a79eaf97ec417d34ff988d748c1a6d9cc029eab03417b846605
 
 name:           webby
 version:        0.1.3
@@ -14,12 +14,18 @@ description:    A super-simple, easy to use web server framework inspired by
                 graceful exception handling (3) Parse request parameters easily and
                 in a typed manner.
 category:       Web
+homepage:       https://github.com/donatello/webby
+bug-reports:    https://github.com/donatello/webby/issues
 maintainer:     aditya.mmy@gmail.com
 license:        Apache-2.0
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
+
+source-repository head
+  type: git
+  location: https://github.com/donatello/webby
 
 flag dev
   manual: True

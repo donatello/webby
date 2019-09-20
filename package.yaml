@@ -1,6 +1,7 @@
 name:                webby
 version:             0.1.3
 synopsis:            A super-simple web server framework
+homepage:            "https://github.com/donatello/webby"
 description: |
   A super-simple, easy to use web server framework inspired by
   Scotty. The goals of the project are: (1) Be easy to use (2) Allow
@@ -9,6 +10,9 @@ description: |
 license-file: LICENSE
 category:            Web
 maintainer: aditya.mmy@gmail.com
+git: "https://github.com/donatello/webby"
+bug-reports: "https://github.com/donatello/webby/issues"
+
 extra-source-files:
 - README.md
 
