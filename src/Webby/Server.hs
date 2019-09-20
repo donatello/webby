@@ -212,12 +212,11 @@ mkWebbyApp appEnv routes = do
 
               -- Handles Webby's finish statement
             , E.Handler (\(_ :: FinishThrown) -> webbyReply wEnv respond)
-
+            ] `E.catchAny`
               -- Handles any other exception thrown in the handler
-            , E.Handler (\(ex :: E.SomeException) -> do
-                              Log.runStdoutLoggingT $ Log.logInfoN (show ex)
-                              respond $ responseLBS status500 [] (show ex))
-            ]
+              \ex -> do Log.runStdoutLoggingT $ Log.logErrorN (show ex)
+                        respond $ responseLBS status500 [] (show ex)
+
 
     webbyReply wEnv respond' = do
         let wVar = weResp wEnv
