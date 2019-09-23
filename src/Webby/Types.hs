@@ -64,7 +64,7 @@ runWebbyM env = runResourceT . flip runReaderT env . unWebbyM
 
 -- A route pattern specifies a HTTP method and a list of path segments
 -- that must match.
-data RoutePattern = RoutePattern Method [PathSegment]
+data RoutePattern = RoutePattern Method [Text]
                   deriving (Eq, Show)
 
 -- | The Routes of a web-application are a list of mappings from a
@@ -73,10 +73,6 @@ type Routes appEnv = [(RoutePattern, WebbyM appEnv ())]
 
 -- | Captures are simply extracted path elements in a HashMap
 type Captures = H.HashMap Text Text
-
-data PathSegment = Literal Text
-                 | Capture Text
-                 deriving (Eq, Show)
 
 -- | Internal type used to terminate handler processing by throwing and
 -- catching an exception.
