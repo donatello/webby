@@ -3,7 +3,6 @@ module Webby
 
   -- * Routing and handler functions
   , RoutePattern
-  , Routes
   , mkRoute
   , post
   , get

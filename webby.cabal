@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8b1f369db62b5a79eaf97ec417d34ff988d748c1a6d9cc029eab03417b846605
+-- hash: f7099d624ade1cbfaeadb2a98eb80f836c1dd0badc726bb075c6c6f620f30f3a
 
 name:           webby
 version:        0.1.3
@@ -34,7 +34,7 @@ flag dev
 library
   hs-source-dirs:
       src
-  default-extensions: FlexibleInstances MultiParamTypeClasses NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
+  default-extensions: FlexibleInstances MultiParamTypeClasses MultiWayIf NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
   ghc-options: -Wall
   build-depends:
       aeson >=1.2 && <1.5
@@ -57,7 +57,6 @@ library
   exposed-modules:
       Webby
   other-modules:
-      Webby.Route
       Webby.Server
       Webby.Types
       WebbyPrelude
@@ -69,16 +68,14 @@ test-suite webby-test
   main-is: Spec.hs
   other-modules:
       Webby
-      Webby.Route
       Webby.Server
       Webby.Types
       WebbyPrelude
-      Webby.RouteTest
       Paths_webby
   hs-source-dirs:
       src
       test
-  default-extensions: FlexibleInstances MultiParamTypeClasses NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
+  default-extensions: FlexibleInstances MultiParamTypeClasses MultiWayIf NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson >=1.2 && <1.5

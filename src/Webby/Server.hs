@@ -18,7 +18,6 @@ import           Web.HttpApiData
 
 import           WebbyPrelude
 
-import           Webby.Route
 import           Webby.Types
 
 -- | Retrieve the app environment given to the application at
@@ -160,14 +159,22 @@ stream s = do
     Conc.modifyMVar_ wVar $
         \wr -> return $ wr { wrRespData = Left s }
 
--- | matchRequest uses a looks up a data structure built from the
--- configured routes.
-matchRequest :: Request -> HashTrie a -> Maybe (Captures, a)
-matchRequest req trie =
-    let mthd = requestMethod req
-        path = pathInfo req
-        lookupPath = decodeUtf8Lenient mthd : path
-    in lookupItem lookupPath trie
+matchRequest :: Request -> [(RoutePattern, a)] -> Maybe (Captures, a)
+matchRequest _ [] = Nothing
+matchRequest req ((RoutePattern method pathSegs, handler):rs) =
+    if requestMethod req == method
+    then case go (pathInfo req) pathSegs H.empty of
+           Nothing -> matchRequest req rs
+           Just cs -> return (cs, handler)
+    else matchRequest req rs
+  where
+    go [] p h | mconcat p == "" = Just h
+              | otherwise = Nothing
+    go p [] h | mconcat p == "" = Just h
+              | otherwise = Nothing
+    go (p:ps) (l:pat) h | T.head l == ':' = go ps pat $ H.insert (T.drop 1 l) p h
+                        | p == l = go ps pat h
+                        | otherwise = Nothing
 
 errorResponse404 :: WebbyM appEnv ()
 errorResponse404 = setStatus status404
@@ -179,19 +186,17 @@ invalidRoutesErr = "Invalid route specification: contains duplicate routes or ro
 -- user/application defined `appEnv` data type and a list of
 -- routes. If none of the requests match a request, a default 404
 -- response is returned.
-mkWebbyApp :: appEnv -> Routes appEnv -> IO Application
-mkWebbyApp appEnv routes = do
+mkWebbyApp :: appEnv -> [(RoutePattern, WebbyM appEnv ())] -> IO Application
+mkWebbyApp appEnv routes' = do
     lset <- FLog.newStdoutLoggerSet FLog.defaultBufSize
-    routeTrie <- maybe (E.throwString invalidRoutesErr) return $
-                 mkRoutesHashTrie routes
-    return $ mkApp lset routeTrie
+    return $ mkApp lset routes'
 
   where
 
-    mkApp lset trie req respond = do
+    mkApp lset routes req respond = do
         let defaultHandler = errorResponse404
             (cs, handler) = fromMaybe (H.empty, defaultHandler) $
-                            matchRequest req trie
+                            matchRequest req routes
 
         timeFn <- newTimeCache "%Y-%m-%dT%H:%M:%S "
         wEnv <- do v <- Conc.newMVar defaultWyResp
@@ -229,21 +234,15 @@ mkWebbyApp appEnv routes = do
               respond' $ responseBuilder (wrStatus wr)
                   (wrHeaders wr ++ [(hContentLength, show clen)]) b
 
-
-text2PathSegments :: Text -> [PathSegment]
-text2PathSegments path =
-    let toSegment s = maybe (Literal s) Capture $
-                      ":" `T.stripPrefix` s
-
-        path' = maybe path identity $ T.stripPrefix "/" path
-
-    in map toSegment $ bool (T.splitOn "/" path') [] $ path' == ""
-
 -- | Create a route for a user-provided HTTP request method, pattern
 -- and handler function.
 mkRoute :: Method -> Text -> WebbyM appEnv ()
         -> (RoutePattern, WebbyM appEnv ())
-mkRoute m p h = (RoutePattern m (text2PathSegments p), h)
+mkRoute m p h =
+  let p' = if | T.null p -> "/"
+              | T.head p /= '/' -> "/" <> p
+              | otherwise -> p
+  in (RoutePattern m (drop 1 $ T.splitOn "/" p'), h)
 
 -- | Create a route for a POST request method, given the path pattern
 -- and handler.
