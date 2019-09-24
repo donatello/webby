@@ -16,7 +16,7 @@ import qualified UnliftIO.Concurrent        as Conc
 import qualified UnliftIO.Exception         as E
 import           Web.HttpApiData
 
-import           WebbyPrelude
+import           Prelude
 
 import           Webby.Types
 
@@ -95,7 +95,7 @@ param_ p = do myParam <- param p
 header :: HeaderName -> WebbyM appEnv (Maybe Text)
 header n = do
     hs <- requestHeaders <$> request
-    return $ headMay $ map (decodeUtf8Lenient . snd) $ filter ((n == ) . fst) hs
+    return $ headMay $ map (decodeUtf8 . snd) $ filter ((n == ) . fst) hs
 
 request :: WebbyM appEnv Request
 request = asks weRequest
@@ -112,7 +112,7 @@ headers = requestHeaders <$> request
 requestBodyLength :: WebbyM appEnv (Maybe Int64)
 requestBodyLength = do
     hMay <- header hContentLength
-    return $ do val <- toS <$> hMay
+    return $ do val <- hMay
                 parseInt val
 
 finish :: WebbyM appEnv a
@@ -209,10 +209,10 @@ mkWebbyApp appEnv routes' = do
               E.Handler (\(ex :: WebbyError) -> case ex of
                             wmc@(WebbyMissingCapture _) ->
                                 respond $ responseLBS status404 [] $
-                                toS $ displayException wmc
+                                encodeUtf8 $ displayException wmc
 
                             _ -> respond $ responseLBS status400 [] $
-                                 toS $ displayException ex
+                                 encodeUtf8 $ displayException ex
                         )
 
               -- Handles Webby's finish statement

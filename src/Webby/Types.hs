@@ -10,7 +10,7 @@ import qualified System.Log.FastLogger as FLog
 import qualified UnliftIO              as U
 import qualified UnliftIO.Concurrent   as Conc
 
-import           WebbyPrelude
+import           Prelude
 
 -- | A data type to represent parts of the response constructed in the
 -- handler when servicing a request.

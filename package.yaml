@@ -1,5 +1,5 @@
 name:                webby
-version:             0.3.0
+version:             0.3.1
 synopsis:            A super-simple web server framework
 homepage:            "https://github.com/donatello/webby"
 description: |
@@ -25,11 +25,12 @@ flags:
 
 when:
   - condition: flag(dev)
-    ghc-options: -Werror
+    ghc-options: "-Wall -Werror"
 
 dependencies:
   - aeson >= 1.2 && < 1.5
-  - base >= 4.7 && < 5
+  - relude
+  - base-noprelude >= 4.7 && < 5
   - binary >= 0.8 && < 0.9
   - bytestring >= 0.10 && < 0.11
   - fast-logger >= 2.4 && < 2.5
@@ -37,7 +38,6 @@ dependencies:
   - http-api-data >= 0.3 && < 0.5
   - http-types >= 0.12 && < 0.13
   - monad-logger >= 0.3 && < 0.4
-  - protolude >= 0.2 && < 0.3
   - resourcet >= 1.2 && < 1.3
   - text >= 1.2 && < 1.3
   - unliftio >= 0.2.7 && < 0.3
@@ -50,6 +50,7 @@ source-dirs:
 library:
   exposed-modules:
     - Webby
+    - Prelude
 
 default-extensions:
   - FlexibleInstances

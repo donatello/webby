@@ -7,7 +7,7 @@ import qualified Data.HashMap.Strict as H
 
 import           Webby.Server
 import           Webby.Types
-import           WebbyPrelude
+import           Prelude
 
 main :: IO ()
 main = defaultMain tests
