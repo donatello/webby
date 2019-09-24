@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8328c4d0d2c281b35a9d68f0bf6dd439945809c585fed2b86789a8f70cd00ffd
+-- hash: 453573afb20aa05fec6830a6c56f09a3e0ce3770df20ecc25fecb5f278073e09
 
 name:           webby
-version:        0.2.0
+version:        0.3.0
 synopsis:       A super-simple web server framework
 description:    A super-simple, easy to use web server framework inspired by
                 Scotty. The goals of the project are: (1) Be easy to use (2) Allow
