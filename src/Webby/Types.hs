@@ -67,10 +67,6 @@ runWebbyM env = runResourceT . flip runReaderT env . unWebbyM
 data RoutePattern = RoutePattern Method [Text]
                   deriving (Eq, Show)
 
--- | The Routes of a web-application are a list of mappings from a
--- `RoutePattern` to a handler function.
-type Routes appEnv = [(RoutePattern, WebbyM appEnv ())]
-
 -- | Captures are simply extracted path elements in a HashMap
 type Captures = H.HashMap Text Text
 

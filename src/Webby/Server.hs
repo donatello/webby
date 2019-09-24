@@ -159,7 +159,7 @@ stream s = do
     Conc.modifyMVar_ wVar $
         \wr -> return $ wr { wrRespData = Left s }
 
-matchRequest :: Request -> Routes env -> Maybe (Captures, WebbyM env ())
+matchRequest :: Request -> [(RoutePattern, a)] -> Maybe (Captures, a)
 matchRequest _ [] = Nothing
 matchRequest req ((RoutePattern method pathSegs, handler):rs) =
     if requestMethod req == method
@@ -172,7 +172,7 @@ matchRequest req ((RoutePattern method pathSegs, handler):rs) =
               | otherwise = Nothing
     go p [] h | mconcat p == "" = Just h
               | otherwise = Nothing
-    go (p:ps) (l:pat) h | T.head l == '/' = go ps pat $ H.insert (T.drop 1 l) p h
+    go (p:ps) (l:pat) h | T.head l == ':' = go ps pat $ H.insert (T.drop 1 l) p h
                         | p == l = go ps pat h
                         | otherwise = Nothing
 
@@ -186,7 +186,7 @@ invalidRoutesErr = "Invalid route specification: contains duplicate routes or ro
 -- user/application defined `appEnv` data type and a list of
 -- routes. If none of the requests match a request, a default 404
 -- response is returned.
-mkWebbyApp :: appEnv -> Routes appEnv -> IO Application
+mkWebbyApp :: appEnv -> [(RoutePattern, WebbyM appEnv ())] -> IO Application
 mkWebbyApp appEnv routes' = do
     lset <- FLog.newStdoutLoggerSet FLog.defaultBufSize
     return $ mkApp lset routes'
