@@ -182,11 +182,11 @@ errorResponse404 = setStatus status404
 invalidRoutesErr :: [Char]
 invalidRoutesErr = "Invalid route specification: contains duplicate routes or routes with overlapping capture patterns."
 
--- | Use this function, to create a WAI application. It takes a
--- user/application defined `appEnv` data type and a list of
--- routes. If none of the requests match a request, a default 404
--- response is returned.
-mkWebbyApp :: appEnv -> [(RoutePattern, WebbyM appEnv ())] -> IO Application
+-- | Use this function, to create a WAI application. It takes a user/application
+-- defined `appEnv` data type and a list of routes. Routes are matched in the
+-- given order. If none of the requests match a request, a default 404 response
+-- is returned.
+mkWebbyApp :: appEnv -> [Route appEnv] -> IO Application
 mkWebbyApp appEnv routes' = do
     lset <- FLog.newStdoutLoggerSet FLog.defaultBufSize
     return $ mkApp lset routes'

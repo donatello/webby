@@ -62,10 +62,12 @@ instance Log.MonadLogger (WebbyM env) where
 runWebbyM :: WEnv w -> WebbyM w a -> IO a
 runWebbyM env = runResourceT . flip runReaderT env . unWebbyM
 
--- A route pattern specifies a HTTP method and a list of path segments
--- that must match.
+-- | A route pattern represents logic to match a request to a handler.
 data RoutePattern = RoutePattern Method [Text]
                   deriving (Eq, Show)
+
+-- | A route is a pair of a route pattern and a handler.
+type Route env = (RoutePattern, WebbyM env ())
 
 -- | Captures are simply extracted path elements in a HashMap
 type Captures = H.HashMap Text Text
