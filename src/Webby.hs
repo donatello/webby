@@ -46,6 +46,12 @@ module Webby
   , getAppEnv
   , runAppEnv
 
+  -- * Webby server configuration
+  , WebbyServerConfig
+  , defaultWebbyServerConfig
+  , setRoutes
+  , setExceptionHandler
+
   -- * Handler flow control
   , finish
 

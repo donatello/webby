@@ -1,7 +1,6 @@
 module Webby.Server where
 
 
-import qualified Control.Monad.Logger       as Log
 import qualified Data.Aeson                 as A
 import qualified Data.Binary.Builder        as Bu
 import qualified Data.ByteString.Lazy       as LB
@@ -10,8 +9,6 @@ import qualified Data.List                  as L
 import qualified Data.Text                  as T
 import           Network.HTTP.Types.URI     (queryToQueryText)
 import           Network.Wai.Internal       (getRequestBodyChunk)
-import qualified System.Log.FastLogger      as FLog
-import           System.Log.FastLogger.Date (newTimeCache)
 import qualified UnliftIO.Concurrent        as Conc
 import qualified UnliftIO.Exception         as E
 import           Web.HttpApiData
@@ -186,23 +183,28 @@ invalidRoutesErr = "Invalid route specification: contains duplicate routes or ro
 -- defined `appEnv` data type and a list of routes. Routes are matched in the
 -- given order. If none of the requests match a request, a default 404 response
 -- is returned.
-mkWebbyApp :: appEnv -> [Route appEnv] -> IO Application
-mkWebbyApp appEnv routes' = do
-    lset <- FLog.newStdoutLoggerSet FLog.defaultBufSize
-    return $ mkApp lset routes'
 
+mkWebbyApp :: env -> WebbyServerConfig env -> IO Application
+mkWebbyApp env wsc =
+    return $ mkApp
   where
+    shortCircuitHandler =
+        [ -- Handler for FinishThrown exception to guide
+          -- short-circuiting handlers to early completion
+          E.Handler (\(ex :: FinishThrown) -> E.throwIO ex)
+        ]
+    mkApp req respond = do
+        let defaultHandler      = errorResponse404
+            routes              = wscRoutes wsc
+            exceptionHandlerMay = wscExceptionHandler wsc
+            (cs, handler)       = fromMaybe (H.empty, defaultHandler) $
+                                  matchRequest req routes
 
-    mkApp lset routes req respond = do
-        let defaultHandler = errorResponse404
-            (cs, handler) = fromMaybe (H.empty, defaultHandler) $
-                            matchRequest req routes
-
-        timeFn <- newTimeCache "%Y-%m-%dT%H:%M:%S "
         wEnv <- do v <- Conc.newMVar defaultWyResp
-                   return $ WEnv v cs req appEnv lset timeFn
-
-        (do runWebbyM wEnv handler
+                   return $ WEnv v cs req env exceptionHandlerMay
+        (do runWebbyM wEnv $ handler `E.catches`
+                (shortCircuitHandler
+                 <> fmap (\(WebbyExceptionHandler e) -> E.Handler e) (maybeToList exceptionHandlerMay))
             webbyReply wEnv respond) `E.catches`
             [ -- Handles Webby' exceptions while parsing parameters
               -- and request body
@@ -217,11 +219,6 @@ mkWebbyApp appEnv routes' = do
 
               -- Handles Webby's finish statement
             , E.Handler (\(_ :: FinishThrown) -> webbyReply wEnv respond)
-
-              -- Handles any other exception thrown in the handler
-            , E.Handler (\(ex :: E.SomeException) -> do
-                              Log.runStdoutLoggingT $ Log.logInfoN (show ex)
-                              respond $ responseLBS status500 [] (show ex))
             ]
 
     webbyReply wEnv respond' = do
