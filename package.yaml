@@ -50,7 +50,6 @@ source-dirs:
 library:
   exposed-modules:
     - Webby
-    - Prelude
 
 default-extensions:
   - FlexibleInstances

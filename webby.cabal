@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 65bbfd9f416a142a8a1486ee20e9bf0dc2bb5715c5086ae8f3587951a83de9b8
+-- hash: 23f1f4c0effdbdebc07332c3e6e9c5916648998f3271fe66c663b9d53a3ba503
 
 name:           webby
 version:        0.3.1
@@ -56,8 +56,8 @@ library
     ghc-options: -Wall -Werror
   exposed-modules:
       Webby
-      Prelude
   other-modules:
+      Prelude
       Webby.Server
       Webby.Types
       Paths_webby
