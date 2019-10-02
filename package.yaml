@@ -1,5 +1,5 @@
 name:                webby
-version:             0.3.1
+version:             0.4.0
 synopsis:            A super-simple web server framework
 homepage:            "https://github.com/donatello/webby"
 description: |

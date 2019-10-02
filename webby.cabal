@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 23f1f4c0effdbdebc07332c3e6e9c5916648998f3271fe66c663b9d53a3ba503
+-- hash: bfb0c373ed44cff2bdb24832b270b756c77829da9cdacc96529b25985b637c95
 
 name:           webby
-version:        0.3.1
+version:        0.4.0
 synopsis:       A super-simple web server framework
 description:    A super-simple, easy to use web server framework inspired by
                 Scotty. The goals of the project are: (1) Be easy to use (2) Allow
@@ -32,6 +32,13 @@ flag dev
   default: False
 
 library
+  exposed-modules:
+      Webby
+  other-modules:
+      Prelude
+      Webby.Server
+      Webby.Types
+      Paths_webby
   hs-source-dirs:
       src
   default-extensions: FlexibleInstances MultiParamTypeClasses MultiWayIf NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
@@ -52,13 +59,6 @@ library
     , wai >=3.2 && <3.3
   if flag(dev)
     ghc-options: -Wall -Werror
-  exposed-modules:
-      Webby
-  other-modules:
-      Prelude
-      Webby.Server
-      Webby.Types
-      Paths_webby
   default-language: Haskell2010
 
 test-suite webby-test
