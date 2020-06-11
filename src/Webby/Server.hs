@@ -6,8 +6,6 @@ import qualified Data.ByteString.Lazy as LB
 import qualified Data.HashMap.Strict as H
 import qualified Data.List as L
 import qualified Data.Text as T
-import Network.HTTP.Types.URI (queryToQueryText)
-import Network.Wai.Internal (getRequestBodyChunk)
 import qualified UnliftIO.Concurrent as Conc
 import qualified UnliftIO.Exception as E
 import Web.HttpApiData

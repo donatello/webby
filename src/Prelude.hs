@@ -11,8 +11,6 @@ import Control.Monad.Trans.Resource as Exports
     liftResourceT,
     runResourceT,
   )
--- import           Data.Text.Encoding           (decodeUtf8With)
--- import           Data.Text.Encoding.Error     (lenientDecode)
 import qualified Data.Text.Read as TR
 -- Text formatting
 import Formatting as Exports ((%), format, sformat)

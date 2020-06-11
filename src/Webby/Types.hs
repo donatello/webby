@@ -3,6 +3,11 @@
 
 module Webby.Types where
 
+-- We directly depend on unliftio-core's Control.Monad.IO.Unlift, so we can
+-- deriving MonadUnliftIO via GeneralizedNewtypeDeriving. If we depend on the
+-- exported class from unliftio's UnliftIO module, we have problem building with
+-- stack and LTS 16.0. FIXME: fix this unliftio has the right dep.
+import qualified Control.Monad.IO.Unlift as Un
 import qualified Data.Binary.Builder as Bu
 import qualified Data.HashMap.Strict as H
 import qualified Data.Text as T
@@ -43,14 +48,7 @@ data WEnv env = WEnv
 newtype WebbyM env a = WebbyM
   { unWebbyM :: ReaderT (WEnv env) (ResourceT IO) a
   }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadReader (WEnv env))
-
-instance U.MonadUnliftIO (WebbyM appData) where
-  askUnliftIO = WebbyM $ ReaderT $
-    \(w :: WEnv appData) -> U.withUnliftIO $
-      \u ->
-        return $
-          U.UnliftIO (U.unliftIO u . flip runReaderT w . unWebbyM)
+  deriving (Functor, Applicative, Monad, MonadIO, MonadReader (WEnv env), Un.MonadUnliftIO)
 
 runWebbyM :: WEnv w -> WebbyM w a -> IO a
 runWebbyM env = runResourceT . flip runReaderT env . unWebbyM

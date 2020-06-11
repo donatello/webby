@@ -28,17 +28,20 @@ when:
     ghc-options: "-Wall -Werror"
 
 dependencies:
-  - aeson >= 1.2 && < 1.5
+  - aeson >= 1.4 && < 1.5
   - relude
-  - base-noprelude >= 4.7 && < 5
+  - name: base
+    mixin:
+      - hiding (Prelude)
   - binary >= 0.8 && < 0.9
   - bytestring >= 0.10 && < 0.11
-  - formatting >= 6.3 && < 6.4
-  - http-api-data >= 0.3 && < 0.5
+  - formatting >= 6.3.7 && < 6.4
+  - http-api-data >= 0.4 && < 0.5
   - http-types >= 0.12 && < 0.13
   - resourcet >= 1.2 && < 1.3
   - text >= 1.2 && < 1.3
-  - unliftio >= 0.2.7 && < 0.3
+  - unliftio >= 0.2.13 && < 0.3
+  - unliftio-core >= 0.2 && < 0.3
   - unordered-containers >= 0.2.9 && < 0.3
   - wai >= 3.2 && < 3.3
 
