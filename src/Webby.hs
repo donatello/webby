@@ -1,65 +1,65 @@
 module Webby
-  ( WebbyM
+  ( WebbyM,
 
-  -- * Routing and handler functions
-  , RoutePattern
-  , Route
-  , mkRoute
-  , post
-  , get
-  , put
-  , delete
+    -- * Routing and handler functions
+    RoutePattern,
+    Route,
+    mkRoute,
+    post,
+    get,
+    put,
+    delete,
 
-  -- * Captures
-  , Captures
-  , captures
-  , getCapture
+    -- * Captures
+    Captures,
+    captures,
+    getCapture,
 
-  -- * Request parsing
-  , flag
-  , header
-  , headers
-  , jsonData
-  , param
-  , param_
-  , params
-  , request
-  , requestBodyLBS
-  , requestBodyLength
-  , getRequestBodyChunkAction
+    -- * Request parsing
+    flag,
+    header,
+    headers,
+    jsonData,
+    param,
+    param_,
+    params,
+    request,
+    requestBodyLBS,
+    requestBodyLength,
+    getRequestBodyChunkAction,
 
-  -- * Response modification
-  , setStatus
-  , addHeader
-  , setHeader
-  , blob
-  , json
-  , text
-  , stream
+    -- * Response modification
+    setStatus,
+    addHeader,
+    setHeader,
+    blob,
+    json,
+    text,
+    stream,
 
-  -- * Application
-  , mkWebbyApp
-  , Application
+    -- * Application
+    mkWebbyApp,
+    Application,
 
-  -- * Application context
-  , WEnv
-  , getAppEnv
-  , runAppEnv
+    -- * Application context
+    WEnv,
+    getAppEnv,
+    runAppEnv,
 
-  -- * Webby server configuration
-  , WebbyServerConfig
-  , defaultWebbyServerConfig
-  , setRoutes
-  , setExceptionHandler
+    -- * Webby server configuration
+    WebbyServerConfig,
+    defaultWebbyServerConfig,
+    setRoutes,
+    setExceptionHandler,
 
-  -- * Handler flow control
-  , finish
+    -- * Handler flow control
+    finish,
 
-  -- * Exceptions thrown
-  , WebbyError(..)
-  ) where
+    -- * Exceptions thrown
+    WebbyError (..),
+  )
+where
 
-import           Webby.Server
-import           Webby.Types
-
-import           Network.Wai  (Application)
+import Network.Wai (Application)
+import Webby.Server
+import Webby.Types
