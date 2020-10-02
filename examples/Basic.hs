@@ -8,21 +8,21 @@
    --package webby
 -}
 
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module Main where
 
-import qualified Data.Text as T
-import Network.HTTP.Types (status500)
-import qualified Network.Wai as W
+import qualified Data.Text                as T
+import           Network.HTTP.Types       (status500)
+import qualified Network.Wai              as W
 import qualified Network.Wai.Handler.Warp as W
-import Relude hiding (get, put)
-import Relude.Print (putTextLn)
-import UnliftIO (liftIO)
-import qualified UnliftIO.Exception as E
-import Webby
+import           Relude                   hiding (get, put)
+import           Relude.Print             (putTextLn)
+import           UnliftIO                 (liftIO)
+import qualified UnliftIO.Exception       as E
+import           Webby
 
 -- An example exception handler web-applications can install with webby
 appExceptionHandler :: T.Text -> (E.SomeException -> WebbyM appEnv ())

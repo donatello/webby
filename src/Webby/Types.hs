@@ -1,4 +1,4 @@
-{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE ExistentialQuantification  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Webby.Types where
@@ -8,19 +8,19 @@ module Webby.Types where
 -- exported class from unliftio's UnliftIO module, we have problem building with
 -- stack and LTS 16.0. FIXME: fix this unliftio has the right dep.
 import qualified Control.Monad.IO.Unlift as Un
-import qualified Data.Binary.Builder as Bu
-import qualified Data.HashMap.Strict as H
-import qualified Data.Text as T
-import qualified UnliftIO as U
-import qualified UnliftIO.Concurrent as Conc
-import Prelude
+import qualified Data.Binary.Builder     as Bu
+import qualified Data.HashMap.Strict     as H
+import qualified Data.Text               as T
+import           Prelude
+import qualified UnliftIO                as U
+import qualified UnliftIO.Concurrent     as Conc
 
 -- | A data type to represent parts of the response constructed in the
 -- handler when servicing a request.
 data WyResp = WyResp
-  { wrStatus :: Status,
-    wrHeaders :: ResponseHeaders,
-    wrRespData :: Either StreamingBody Bu.Builder,
+  { wrStatus    :: Status,
+    wrHeaders   :: ResponseHeaders,
+    wrRespData  :: Either StreamingBody Bu.Builder,
     wrResponded :: Bool
   }
 
@@ -32,10 +32,10 @@ data WebbyExceptionHandler env = forall e. Exception e => WebbyExceptionHandler 
 -- | The reader environment used by the web framework. It is
 -- parameterized by the application's environment data type.
 data WEnv env = WEnv
-  { weResp :: Conc.MVar WyResp,
-    weCaptures :: Captures,
-    weRequest :: Request,
-    weAppEnv :: env,
+  { weResp             :: Conc.MVar WyResp,
+    weCaptures         :: Captures,
+    weRequest          :: Request,
+    weAppEnv           :: env,
     weExceptionHandler :: Maybe (WebbyExceptionHandler env)
   }
 
@@ -78,7 +78,7 @@ data WebbyError
   = WebbyJSONParseError Text
   | WebbyParamParseError
       { wppeParamName :: Text,
-        wppeErrMsg :: Text
+        wppeErrMsg    :: Text
       }
   | WebbyMissingCapture Text
   deriving (Show)
@@ -91,7 +91,7 @@ instance U.Exception WebbyError where
     T.unpack $ sformat (st % " missing") capName
 
 data WebbyServerConfig env = WebbyServerConfig
-  { wscRoutes :: [Route env],
+  { wscRoutes           :: [Route env],
     wscExceptionHandler :: Maybe (WebbyExceptionHandler env)
   }
 
