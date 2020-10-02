@@ -15,16 +15,19 @@ import Prelude
 -- | Retrieve the app environment given to the application at
 -- initialization.
 getAppEnv :: WebbyM appEnv appEnv
-getAppEnv = asks weAppEnv
+getAppEnv = asksWEnv weAppEnv
 
 runAppEnv :: ReaderT appEnv (WebbyM appEnv) a -> WebbyM appEnv a
 runAppEnv appFn = do
   env <- getAppEnv
   runReaderT appFn env
 
+asksWEnv :: (WEnv appEnv -> a) -> WebbyM appEnv a
+asksWEnv getter = WebbyM $ lift $ asks getter
+
 -- | Retrieve all path captures
 captures :: WebbyM appEnv Captures
-captures = asks weCaptures
+captures = asksWEnv weCaptures
 
 -- | Retrieve a particular capture (TODO: extend?)
 getCapture :: (FromHttpApiData a) => Text -> WebbyM appEnv a
@@ -40,12 +43,12 @@ getCapture capName = do
 
 setStatus :: Status -> WebbyM appEnv ()
 setStatus sts = do
-  wVar <- asks weResp
+  wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $ \wr -> return $ wr {wrStatus = sts}
 
 addHeader :: Header -> WebbyM appEnv ()
 addHeader h = do
-  wVar <- asks weResp
+  wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $
     \wr -> do
       let hs = wrHeaders wr
@@ -54,7 +57,7 @@ addHeader h = do
 -- similar to addHeader but replaces a header
 setHeader :: Header -> WebbyM appEnv ()
 setHeader (k, v) = do
-  wVar <- asks weResp
+  wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $
     \wr -> do
       let hs = wrHeaders wr
@@ -100,13 +103,13 @@ header n = do
   return $ headMay $ map (decodeUtf8 . snd) $ filter ((n ==) . fst) hs
 
 request :: WebbyM appEnv Request
-request = asks weRequest
+request = asksWEnv weRequest
 
 -- | Returns an action that returns successive chunks of the rquest
 -- body. It returns an empty bytestring after the request body is
 -- consumed.
 getRequestBodyChunkAction :: WebbyM appEnv (WebbyM appEnv ByteString)
-getRequestBodyChunkAction = (liftIO . getRequestBodyChunk) <$> asks weRequest
+getRequestBodyChunkAction = (liftIO . getRequestBodyChunk) <$> asksWEnv weRequest
 
 headers :: WebbyM appEnv [Header]
 headers = requestHeaders <$> request
@@ -124,21 +127,22 @@ finish = E.throwIO FinishThrown
 blob :: ByteString -> WebbyM appEnv ()
 blob bs = do
   setHeader (hContentType, "application/octet-stream")
-  wVar <- asks weResp
+  wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $
     \wr -> return $ wr {wrRespData = Right $ Bu.fromByteString bs}
 
 text :: Text -> WebbyM appEnv ()
 text txt = do
   setHeader (hContentType, "text/plain; charset=utf-8")
-  wVar <- asks weResp
+  wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $
     \wr ->
       return $
         wr
           { wrRespData =
-              Right $ Bu.fromByteString $
-                encodeUtf8 txt
+              Right $
+                Bu.fromByteString $
+                  encodeUtf8 txt
           }
 
 -- | Return the raw request body as a lazy bytestring
@@ -156,19 +160,20 @@ jsonData = do
 json :: A.ToJSON b => b -> WebbyM appEnv ()
 json j = do
   setHeader (hContentType, "application/json; charset=utf-8")
-  wVar <- asks weResp
+  wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $
     \wr ->
       return $
         wr
           { wrRespData =
-              Right $ Bu.fromLazyByteString $
-                A.encode j
+              Right $
+                Bu.fromLazyByteString $
+                  A.encode j
           }
 
 stream :: StreamingBody -> WebbyM appEnv ()
 stream s = do
-  wVar <- asks weResp
+  wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $
     \wr -> return $ wr {wrRespData = Left s}
 
@@ -236,13 +241,15 @@ mkWebbyApp env wsc =
                       E.Handler
                         ( \(ex :: WebbyError) -> case ex of
                             wmc@(WebbyMissingCapture _) ->
-                              respond $ responseLBS status404 []
-                                $ encodeUtf8
-                                $ displayException wmc
+                              respond $
+                                responseLBS status404 [] $
+                                  encodeUtf8 $
+                                    displayException wmc
                             _ ->
-                              respond $ responseLBS status400 []
-                                $ encodeUtf8
-                                $ displayException ex
+                              respond $
+                                responseLBS status400 [] $
+                                  encodeUtf8 $
+                                    displayException ex
                         ),
                       -- Handles Webby's finish statement
                       E.Handler (\(_ :: FinishThrown) -> webbyReply wEnv respond)

@@ -1,6 +1,6 @@
 #!/usr/bin/env stack
 {- stack
-   --resolver lts-13.12
+   --resolver lts-16.0
    runghc
    --package relude
    --package unliftio
@@ -32,6 +32,22 @@ appExceptionHandler appName = \(exception :: E.SomeException) -> do
   putTextLn msg
   text msg
 
+newtype AppEnv = AppEnv Text
+  deriving (Eq, Show)
+
+-- To demonstrate that appEnv is avaliable via MonadReader interface and no
+-- additional boiler-plate is required
+class HasAppName env where
+  getAppName :: env -> Text
+
+instance HasAppName AppEnv where
+  getAppName (AppEnv name) = name
+
+fetchAppName :: (HasAppName env, MonadReader env m, MonadIO m) => m Text
+fetchAppName = do
+  name <- asks getAppName
+  return name
+
 main :: IO ()
 main = do
   -- Define the API routes handled by your web-application
@@ -53,23 +69,23 @@ main = do
                 text $ show val
             ),
           get
-            "/api/showEnv"
+            "/api/showAppName"
             ( do
-                env <- getAppEnv
-                text env
+                appName <- fetchAppName
+                text appName
             ),
           get "/aaah" (liftIO $ E.throwString "oops!")
         ]
       -- Set the routes definition and exception handler for your
       -- web-application
       webbyConfig =
-        setExceptionHandler (appExceptionHandler "MyApp")
-          $ setRoutes routes
-          $ defaultWebbyServerConfig
+        setExceptionHandler (appExceptionHandler "MyApp") $
+          setRoutes routes $
+            defaultWebbyServerConfig
       -- Application environment in this example is a simple Text literal.
       -- Usually, application environment would contain database connections
       -- etc.
-      appEnv = "MyEnv" :: T.Text
+      appEnv = AppEnv "test-webby"
 
   webbyApp <- mkWebbyApp appEnv webbyConfig
   putStrLn "Starting webserver..."
