@@ -46,12 +46,14 @@ data WEnv env = WEnv
 -- (read-only) environment. For e.g. it can be used to store a
 -- database connection pool.
 newtype WebbyM env a = WebbyM
-  { unWebbyM :: ReaderT (WEnv env) (ResourceT IO) a
+  { unWebbyM :: ReaderT env (ReaderT (WEnv env) (ResourceT IO)) a
   }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadReader (WEnv env), Un.MonadUnliftIO)
+  deriving (Functor, Applicative, Monad, MonadIO, MonadReader env, Un.MonadUnliftIO)
 
 runWebbyM :: WEnv w -> WebbyM w a -> IO a
-runWebbyM env = runResourceT . flip runReaderT env . unWebbyM
+runWebbyM env = runResourceT . flip runReaderT env . flip runReaderT appEnv . unWebbyM
+  where
+    appEnv = weAppEnv env
 
 -- | A route pattern represents logic to match a request to a handler.
 data RoutePattern = RoutePattern Method [Text]
