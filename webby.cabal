@@ -4,10 +4,10 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8c9167d4601ca0b80fcbd535444188466f835ce49b8ac4727aa45a0939be5874
+-- hash: 7605a1aae63f297e88298453321803851a5b3662666579ecaf473e18acb35a38
 
 name:           webby
-version:        0.4.0
+version:        1.0.0
 synopsis:       A super-simple web server framework
 description:    A super-simple, easy to use web server framework inspired by
                 Scotty. The goals of the project are: (1) Be easy to use (2) Allow
@@ -16,7 +16,8 @@ description:    A super-simple, easy to use web server framework inspired by
 category:       Web
 homepage:       https://github.com/donatello/webby
 bug-reports:    https://github.com/donatello/webby/issues
-maintainer:     aditya.mmy@gmail.com
+maintainer:     aditya.mmy@gmail.com,
+                krishnan.parthasarathi@gmail.com
 license:        Apache-2.0
 license-file:   LICENSE
 build-type:     Simple
