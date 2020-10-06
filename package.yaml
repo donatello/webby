@@ -1,14 +1,14 @@
-name:                webby
-version:             1.0.0
-synopsis:            A super-simple web server framework
-homepage:            "https://github.com/donatello/webby"
+name: webby
+version: 1.0.0
+synopsis: A super-simple web server framework
+homepage: "https://github.com/donatello/webby"
 description: |
   A super-simple, easy to use web server framework inspired by
   Scotty. The goals of the project are: (1) Be easy to use (2) Allow
   graceful exception handling (3) Parse request parameters easily and
   in a typed manner.
 license-file: LICENSE
-category:            Web
+category: Web
 maintainer:
   - aditya.mmy@gmail.com
   - krishnan.parthasarathi@gmail.com
@@ -16,7 +16,7 @@ git: "https://github.com/donatello/webby"
 bug-reports: "https://github.com/donatello/webby/issues"
 
 extra-source-files:
-- README.md
+  - README.md
 
 ghc-options: -Wall
 
@@ -65,14 +65,14 @@ default-extensions:
 
 tests:
   webby-test:
-    main:                Spec.hs
-    source-dirs:         test
+    main: Spec.hs
+    source-dirs: test
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - webby
-    - tasty
-    - tasty-hunit
-    - tasty-quickcheck
+      - webby
+      - tasty
+      - tasty-hunit
+      - tasty-quickcheck
