@@ -94,7 +94,7 @@ param_ p = do
     return
     myParam
 
--- | Get the given header's value
+-- | Get the given header value
 header :: HeaderName -> WebbyM appEnv (Maybe Text)
 header n = do
   hs <- requestHeaders <$> request
@@ -126,7 +126,8 @@ requestBodyLength = do
 finish :: WebbyM appEnv a
 finish = E.throwIO FinishThrown
 
--- | Send a binary stream in the response body
+-- | Send a binary stream in the response body. Also
+-- sets @Content-Type@ header to @application/octet-stream@
 blob :: ByteString -> WebbyM appEnv ()
 blob bs = do
   setHeader (hContentType, "application/octet-stream")
@@ -134,7 +135,8 @@ blob bs = do
   Conc.modifyMVar_ wVar $
     \wr -> return $ wr {wrRespData = Right $ Bu.fromByteString bs}
 
--- | Send plain-text in the response body
+-- | Send plain-text in the response body. Also
+-- sets @Content-Type@ header to @text/plain; charset=utf-8@
 text :: Text -> WebbyM appEnv ()
 text txt = do
   setHeader (hContentType, "text/plain; charset=utf-8")
@@ -164,8 +166,7 @@ jsonData = do
   either (throwIO . WebbyJSONParseError . T.pack) return $ A.eitherDecode body
 
 -- | Set the body of the response to the JSON encoding of the given value. Also
--- sets "Content-Type" header to "application/json; charset=utf-8" if it has not
--- already been set.
+-- sets @Content-Type@ header to @application/json; charset=utf-8@
 json :: A.ToJSON b => b -> WebbyM appEnv ()
 json j = do
   setHeader (hContentType, "application/json; charset=utf-8")
@@ -181,7 +182,7 @@ json j = do
           }
 
 -- | Set the body of the response to a StreamingBody. Doesn't set the
--- "Content-Type" header, so you probably want to do that on your own with
+-- @Content-Type@ header, so you probably want to do that on your own with
 -- 'setHeader'.
 stream :: StreamingBody -> WebbyM appEnv ()
 stream s = do
@@ -294,21 +295,21 @@ mkRoute m p h =
             | otherwise -> p
    in (RoutePattern m (drop 1 $ T.splitOn "/" p'), h)
 
--- | Create a route for a POST request method, given the path pattern
+-- | Create a route for a @POST@ request method, given the path pattern
 -- and handler.
 post :: Text -> WebbyM appEnv () -> (RoutePattern, WebbyM appEnv ())
 post = mkRoute methodPost
 
--- | Create a route for a GET request method, given the path pattern
+-- | Create a route for a @GET@ request method, given the path pattern
 -- and handler.
 get :: Text -> WebbyM appEnv () -> (RoutePattern, WebbyM appEnv ())
 get = mkRoute methodGet
 
--- | Create a route for a PUT request method, given the path pattern
+-- | Create a route for a @PUT@ request method, given the path pattern
 -- and handler.
 put :: Text -> WebbyM appEnv () -> (RoutePattern, WebbyM appEnv ())
 put = mkRoute methodPut
 
--- | Create a route for a DELETE request method, given path pattern and handler.
+-- | Create a route for a @DELETE@ request method, given path pattern and handler.
 delete :: Text -> WebbyM appEnv () -> (RoutePattern, WebbyM appEnv ())
 delete = mkRoute methodDelete
