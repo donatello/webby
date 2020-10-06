@@ -60,6 +60,6 @@ module Webby
   )
 where
 
-import Network.Wai (Application)
-import Webby.Server
-import Webby.Types
+import           Network.Wai  (Application)
+import           Webby.Server
+import           Webby.Types
