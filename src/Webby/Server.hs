@@ -1,16 +1,16 @@
 module Webby.Server where
 
-import qualified Data.Aeson as A
-import qualified Data.Binary.Builder as Bu
+import qualified Data.Aeson           as A
+import qualified Data.Binary.Builder  as Bu
 import qualified Data.ByteString.Lazy as LB
-import qualified Data.HashMap.Strict as H
-import qualified Data.List as L
-import qualified Data.Text as T
-import qualified UnliftIO.Concurrent as Conc
-import qualified UnliftIO.Exception as E
-import Web.HttpApiData
-import Webby.Types
-import Prelude
+import qualified Data.HashMap.Strict  as H
+import qualified Data.List            as L
+import qualified Data.Text            as T
+import           Prelude
+import qualified UnliftIO.Concurrent  as Conc
+import qualified UnliftIO.Exception   as E
+import           Web.HttpApiData
+import           Webby.Types
 
 asksWEnv :: (WEnv appEnv -> a) -> WebbyM appEnv a
 asksWEnv getter = WebbyM $ lift $ asks getter
