@@ -1,5 +1,5 @@
 name:                webby
-version:             0.4.0
+version:             1.0.0
 synopsis:            A super-simple web server framework
 homepage:            "https://github.com/donatello/webby"
 description: |
@@ -9,7 +9,9 @@ description: |
   in a typed manner.
 license-file: LICENSE
 category:            Web
-maintainer: aditya.mmy@gmail.com
+maintainer:
+  - aditya.mmy@gmail.com
+  - krishnan.parthasarathi@gmail.com
 git: "https://github.com/donatello/webby"
 bug-reports: "https://github.com/donatello/webby/issues"
 
