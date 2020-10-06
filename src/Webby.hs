@@ -1,3 +1,8 @@
+-- |
+-- Module      : Webby
+-- Description : An easy to use Haskell web-server inspired by Scotty.
+-- License     : Apache License 2.0
+-- Maintainer  : aditya.mmy@gmail.com
 module Webby
   ( WebbyM,
 
@@ -40,11 +45,6 @@ module Webby
     -- * Application
     mkWebbyApp,
     Application,
-
-    -- * Application context
-    WEnv,
-    getAppEnv,
-    runAppEnv,
 
     -- * Webby server configuration
     WebbyServerConfig,
