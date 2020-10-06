@@ -12,16 +12,6 @@ import Web.HttpApiData
 import Webby.Types
 import Prelude
 
--- | Retrieve the app environment given to the application at
--- initialization.
-getAppEnv :: WebbyM appEnv appEnv
-getAppEnv = asksWEnv weAppEnv
-
-runAppEnv :: ReaderT appEnv (WebbyM appEnv) a -> WebbyM appEnv a
-runAppEnv appFn = do
-  env <- getAppEnv
-  runReaderT appFn env
-
 asksWEnv :: (WEnv appEnv -> a) -> WebbyM appEnv a
 asksWEnv getter = WebbyM $ lift $ asks getter
 
@@ -29,7 +19,7 @@ asksWEnv getter = WebbyM $ lift $ asks getter
 captures :: WebbyM appEnv Captures
 captures = asksWEnv weCaptures
 
--- | Retrieve a particular capture (TODO: extend?)
+-- | Retrieve a particular capture
 getCapture :: (FromHttpApiData a) => Text -> WebbyM appEnv a
 getCapture capName = do
   cs <- captures
@@ -41,11 +31,13 @@ getCapture capName = do
         return
         $ parseUrlPiece cap
 
+-- | Set response status
 setStatus :: Status -> WebbyM appEnv ()
 setStatus sts = do
   wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $ \wr -> return $ wr {wrStatus = sts}
 
+-- | Append given header to the response headers
 addHeader :: Header -> WebbyM appEnv ()
 addHeader h = do
   wVar <- asksWEnv weResp
@@ -54,7 +46,7 @@ addHeader h = do
       let hs = wrHeaders wr
       return $ wr {wrHeaders = hs ++ [h]}
 
--- similar to addHeader but replaces a header
+-- | Similar to 'addHeader' but replaces a header
 setHeader :: Header -> WebbyM appEnv ()
 setHeader (k, v) = do
   wVar <- asksWEnv weResp
@@ -70,14 +62,17 @@ resp400 msg = do
   json $ A.object ["error" A..= A.String msg]
   finish
 
+-- | Get all request query params as a list of key-value pairs
 params :: WebbyM appEnv [(Text, Text)]
 params = do
   qparams <- (queryToQueryText . queryString) <$> request
   return $ fmap (\(q, mv) -> (,) q $ fromMaybe "" mv) qparams
 
+-- | Checks if the request contains the given query param
 flag :: Text -> WebbyM appEnv Bool
 flag name = (isJust . L.lookup name) <$> params
 
+-- | Gets the given query param's value
 param :: (FromHttpApiData a) => Text -> WebbyM appEnv (Maybe a)
 param p = do
   ps <- params
@@ -89,6 +84,8 @@ param p = do
         (return . Just)
         $ parseQueryParam myParam
 
+-- | Similar to 'param' except that it returns the handler with a '400
+-- BadRequest' if the query param is missing.
 param_ :: (FromHttpApiData a) => Text -> WebbyM appEnv a
 param_ p = do
   myParam <- param p
@@ -97,11 +94,13 @@ param_ p = do
     return
     myParam
 
+-- | Get the given header's value
 header :: HeaderName -> WebbyM appEnv (Maybe Text)
 header n = do
   hs <- requestHeaders <$> request
   return $ headMay $ map (decodeUtf8 . snd) $ filter ((n ==) . fst) hs
 
+-- | Get the 'Network.Wai.Request' of the handler
 request :: WebbyM appEnv Request
 request = asksWEnv weRequest
 
@@ -111,9 +110,11 @@ request = asksWEnv weRequest
 getRequestBodyChunkAction :: WebbyM appEnv (WebbyM appEnv ByteString)
 getRequestBodyChunkAction = (liftIO . getRequestBodyChunk) <$> asksWEnv weRequest
 
+-- | Get all the request headers
 headers :: WebbyM appEnv [Header]
 headers = requestHeaders <$> request
 
+-- | Returns request body size in bytes
 requestBodyLength :: WebbyM appEnv (Maybe Int64)
 requestBodyLength = do
   hMay <- header hContentLength
@@ -121,9 +122,11 @@ requestBodyLength = do
     val <- hMay
     parseInt val
 
+-- | Used to return early from an API handler
 finish :: WebbyM appEnv a
 finish = E.throwIO FinishThrown
 
+-- | Send a binary stream in the response body
 blob :: ByteString -> WebbyM appEnv ()
 blob bs = do
   setHeader (hContentType, "application/octet-stream")
@@ -131,6 +134,7 @@ blob bs = do
   Conc.modifyMVar_ wVar $
     \wr -> return $ wr {wrRespData = Right $ Bu.fromByteString bs}
 
+-- | Send plain-text in the response body
 text :: Text -> WebbyM appEnv ()
 text txt = do
   setHeader (hContentType, "text/plain; charset=utf-8")
@@ -151,12 +155,17 @@ requestBodyLBS = do
   req <- request
   liftIO $ lazyRequestBody req
 
+-- | Parse the request body as a JSON object and return it. Raises
+-- 'WebbyJSONParseError' exception if parsing is unsuccessful.
 jsonData :: A.FromJSON a => WebbyM appEnv a
 jsonData = do
   req <- request
   body <- liftIO $ lazyRequestBody req
   either (throwIO . WebbyJSONParseError . T.pack) return $ A.eitherDecode body
 
+-- | Set the body of the response to the JSON encoding of the given value. Also
+-- sets "Content-Type" header to "application/json; charset=utf-8" if it has not
+-- already been set.
 json :: A.ToJSON b => b -> WebbyM appEnv ()
 json j = do
   setHeader (hContentType, "application/json; charset=utf-8")
@@ -171,6 +180,9 @@ json j = do
                   A.encode j
           }
 
+-- | Set the body of the response to a StreamingBody. Doesn't set the
+-- "Content-Type" header, so you probably want to do that on your own with
+-- 'setHeader'.
 stream :: StreamingBody -> WebbyM appEnv ()
 stream s = do
   wVar <- asksWEnv weResp
@@ -203,8 +215,8 @@ errorResponse404 = setStatus status404
 invalidRoutesErr :: [Char]
 invalidRoutesErr = "Invalid route specification: contains duplicate routes or routes with overlapping capture patterns."
 
--- | Use this function, to create a WAI application. It takes a user/application
--- defined `appEnv` data type and a list of routes. Routes are matched in the
+-- | Use this function to create a WAI application. It takes a user/application
+-- defined @appEnv@ data type and a list of routes. Routes are matched in the
 -- given order. If none of the requests match a request, a default 404 response
 -- is returned.
 mkWebbyApp :: env -> WebbyServerConfig env -> IO Application

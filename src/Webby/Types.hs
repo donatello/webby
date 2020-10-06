@@ -41,14 +41,13 @@ data WEnv env = WEnv
 
 -- | The main monad transformer stack used in the web-framework.
 --
--- The type of a handler for a request is `WebbyM appEnv ()`. The
--- `appEnv` parameter is used by the web application to store an
--- (read-only) environment. For e.g. it can be used to store a
--- database connection pool.
-newtype WebbyM env a = WebbyM
-  { unWebbyM :: ReaderT env (ReaderT (WEnv env) (ResourceT IO)) a
+-- The type of a handler for a request is @WebbyM appEnv ()@. The @appEnv@
+-- parameter is used by the web application to store an (read-only) environment.
+-- For e.g. it can be used to store a database connection pool.
+newtype WebbyM appEnv a = WebbyM
+  { unWebbyM :: ReaderT appEnv (ReaderT (WEnv appEnv) (ResourceT IO)) a
   }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadReader env, Un.MonadUnliftIO)
+  deriving (Functor, Applicative, Monad, MonadIO, MonadReader appEnv, Un.MonadUnliftIO)
 
 runWebbyM :: WEnv w -> WebbyM w a -> IO a
 runWebbyM env = runResourceT . flip runReaderT env . flip runReaderT appEnv . unWebbyM
@@ -90,11 +89,15 @@ instance U.Exception WebbyError where
   displayException (WebbyMissingCapture capName) =
     T.unpack $ sformat (st % " missing") capName
 
+-- | Holds web server configuration like API routes, handlers and an optional
+-- exception handler
 data WebbyServerConfig env = WebbyServerConfig
   { wscRoutes :: [Route env],
     wscExceptionHandler :: Maybe (WebbyExceptionHandler env)
   }
 
+-- | Default @WebbyServerConfig@ typically used in conjunction with 'setRoutes'
+-- and 'setExceptionHandler'
 defaultWebbyServerConfig :: WebbyServerConfig env
 defaultWebbyServerConfig =
   WebbyServerConfig
@@ -102,6 +105,7 @@ defaultWebbyServerConfig =
       wscExceptionHandler = Nothing :: Maybe (WebbyExceptionHandler env)
     }
 
+-- | Sets API routes and their handlers of a 'WebbyServerConfig'
 setRoutes ::
   [Route env] ->
   WebbyServerConfig env ->
@@ -111,6 +115,7 @@ setRoutes routes wsc =
     { wscRoutes = routes
     }
 
+-- | Sets the exception handler of a 'WebbyServerConfig'
 setExceptionHandler ::
   Exception e =>
   (e -> WebbyM env ()) ->
