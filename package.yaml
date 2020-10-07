@@ -33,6 +33,7 @@ dependencies:
   - aeson >= 1.4 && < 1.5
   - relude
   - name: base
+    version: ">= 4.7 && < 5"
     mixin:
       - hiding (Prelude)
   - binary >= 0.8 && < 0.9
@@ -53,6 +54,8 @@ source-dirs:
 library:
   exposed-modules:
     - Webby
+  generated-other-modules:
+    - Paths_webby
 
 default-extensions:
   - FlexibleInstances

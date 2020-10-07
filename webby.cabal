@@ -4,7 +4,7 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7605a1aae63f297e88298453321803851a5b3662666579ecaf473e18acb35a38
+-- hash: b211693d69ab4d3d938e226148afca6d0405b20971fcfc052c1c9196af8a9b4b
 
 name:           webby
 version:        1.0.0
@@ -40,13 +40,15 @@ library
       Webby.Server
       Webby.Types
       Paths_webby
+  autogen-modules:
+      Paths_webby
   hs-source-dirs:
       src
   default-extensions: FlexibleInstances MultiParamTypeClasses MultiWayIf NoImplicitPrelude OverloadedStrings ScopedTypeVariables TupleSections
   ghc-options: -Wall
   build-depends:
       aeson >=1.4 && <1.5
-    , base
+    , base >=4.7 && <5
     , binary >=0.8 && <0.9
     , bytestring >=0.10 && <0.11
     , formatting >=6.3.7 && <6.4
@@ -81,7 +83,7 @@ test-suite webby-test
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson >=1.4 && <1.5
-    , base
+    , base >=4.7 && <5
     , binary >=0.8 && <0.9
     , bytestring >=0.10 && <0.11
     , formatting >=6.3.7 && <6.4
