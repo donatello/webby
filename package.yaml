@@ -30,14 +30,14 @@ when:
     ghc-options: "-Wall -Werror"
 
 dependencies:
-  - aeson >= 1.4 && < 1.5
-  - relude
+  - aeson >= 1.4 && < 2
+  - relude >= 0.7
   - name: base
     version: ">= 4.7 && < 5"
     mixin:
       - hiding (Prelude)
-  - binary >= 0.8 && < 0.9
-  - bytestring >= 0.10 && < 0.11
+  - binary >= 0.8 && < 1
+  - bytestring >= 0.10 && < 1
   - formatting >= 6.3.7 && < 6.4
   - http-api-data >= 0.4 && < 0.5
   - http-types >= 0.12 && < 0.13
