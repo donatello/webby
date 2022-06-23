@@ -66,7 +66,8 @@ main = do
       -- web-application
       webbyConfig =
         setExceptionHandler (appExceptionHandler "MyApp") $
-          setRoutes routes
+          setRoutes
+            routes
             defaultWebbyServerConfig
       -- Application environment in this example is a simple Text literal.
       -- Usually, application environment would contain database connections
