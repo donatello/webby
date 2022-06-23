@@ -47,7 +47,7 @@ data WEnv env = WEnv
 newtype WebbyM appEnv a = WebbyM
   { unWebbyM :: ReaderT appEnv (ReaderT (WEnv appEnv) (ResourceT IO)) a
   }
-  deriving (Functor, Applicative, Monad, MonadIO, MonadReader appEnv, Un.MonadUnliftIO)
+  deriving newtype (Functor, Applicative, Monad, MonadIO, MonadReader appEnv, Un.MonadUnliftIO)
 
 runWebbyM :: WEnv w -> WebbyM w a -> IO a
 runWebbyM env = runResourceT . flip runReaderT env . flip runReaderT appEnv . unWebbyM
@@ -56,7 +56,7 @@ runWebbyM env = runResourceT . flip runReaderT env . flip runReaderT appEnv . un
 
 -- | A route pattern represents logic to match a request to a handler.
 data RoutePattern = RoutePattern Method [Text]
-  deriving (Eq, Show)
+  deriving stock (Eq, Show)
 
 -- | A route is a pair of a route pattern and a handler.
 type Route env = (RoutePattern, WebbyM env ())
@@ -67,7 +67,7 @@ type Captures = H.HashMap Text Text
 -- | Internal type used to terminate handler processing by throwing and
 -- catching an exception.
 data FinishThrown = FinishThrown
-  deriving (Show)
+  deriving stock (Show)
 
 instance U.Exception FinishThrown
 
@@ -80,7 +80,7 @@ data WebbyError
         wppeErrMsg :: Text
       }
   | WebbyMissingCapture Text
-  deriving (Show)
+  deriving stock (Show)
 
 instance U.Exception WebbyError where
   displayException (WebbyParamParseError pName msg) =

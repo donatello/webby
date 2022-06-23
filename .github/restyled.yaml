@@ -1,0 +1,6 @@
+restylers:
+  - ormolu
+  - hlint
+  - stylish-haskell:
+      enabled: false
+  - "*"
