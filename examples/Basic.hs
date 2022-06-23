@@ -1,13 +1,3 @@
-#!/usr/bin/env stack
-{- stack
-   --resolver lts-16.0
-   runghc
-   --package relude
-   --package unliftio
-   --package warp
-   --package webby
--}
-
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE NoImplicitPrelude #-}
@@ -16,11 +6,8 @@ module Main where
 
 import qualified Data.Text as T
 import Network.HTTP.Types (status500)
-import qualified Network.Wai as W
 import qualified Network.Wai.Handler.Warp as W
 import Relude hiding (get, put)
-import Relude.Print (putTextLn)
-import UnliftIO (liftIO)
 import qualified UnliftIO.Exception as E
 import Webby
 

@@ -65,12 +65,12 @@ resp400 msg = do
 -- | Get all request query params as a list of key-value pairs
 params :: WebbyM appEnv [(Text, Text)]
 params = do
-  qparams <- (queryToQueryText . queryString) <$> request
+  qparams <- queryToQueryText . queryString <$> request
   return $ fmap (\(q, mv) -> (,) q $ fromMaybe "" mv) qparams
 
 -- | Checks if the request contains the given query param
 flag :: Text -> WebbyM appEnv Bool
-flag name = (isJust . L.lookup name) <$> params
+flag name = isJust . L.lookup name <$> params
 
 -- | Gets the given query param's value
 param :: (FromHttpApiData a) => Text -> WebbyM appEnv (Maybe a)
@@ -108,7 +108,7 @@ request = asksWEnv weRequest
 -- body. It returns an empty bytestring after the request body is
 -- consumed.
 getRequestBodyChunkAction :: WebbyM appEnv (WebbyM appEnv ByteString)
-getRequestBodyChunkAction = (liftIO . getRequestBodyChunk) <$> asksWEnv weRequest
+getRequestBodyChunkAction = liftIO . getRequestBodyChunk <$> asksWEnv weRequest
 
 -- | Get all the request headers
 headers :: WebbyM appEnv [Header]
@@ -222,7 +222,7 @@ invalidRoutesErr = "Invalid route specification: contains duplicate routes or ro
 -- is returned.
 mkWebbyApp :: env -> WebbyServerConfig env -> IO Application
 mkWebbyApp env wsc =
-  return $ mkApp
+  return mkApp
   where
     shortCircuitHandler =
       [ -- Handler for FinishThrown exception to guide
