@@ -13,7 +13,7 @@ import Webby
 
 -- An example exception handler web-applications can install with webby
 appExceptionHandler :: T.Text -> (E.SomeException -> WebbyM appEnv ())
-appExceptionHandler appName = \(exception :: E.SomeException) -> do
+appExceptionHandler appName (exception :: E.SomeException) = do
   setStatus status500
   let msg = appName <> " failed with " <> show exception
   putTextLn msg
@@ -32,8 +32,7 @@ instance HasAppName AppEnv where
 
 fetchAppName :: (HasAppName env, MonadReader env m, MonadIO m) => m Text
 fetchAppName = do
-  name <- asks getAppName
-  return name
+  asks getAppName
 
 main :: IO ()
 main = do
@@ -45,7 +44,7 @@ main = do
             "/api/capture/:id"
             ( do
                 idVal :: Int <- getCapture "id"
-                text $ (T.pack (show idVal) `T.append` "\n")
+                text (T.pack (show idVal) `T.append` "\n")
             ),
           get
             "/api/isOdd/:val"
@@ -67,7 +66,7 @@ main = do
       -- web-application
       webbyConfig =
         setExceptionHandler (appExceptionHandler "MyApp") $
-          setRoutes routes $
+          setRoutes routes
             defaultWebbyServerConfig
       -- Application environment in this example is a simple Text literal.
       -- Usually, application environment would contain database connections
