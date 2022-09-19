@@ -126,11 +126,25 @@ requestBodyLength = do
 finish :: WebbyM appEnv a
 finish = E.throwIO FinishThrown
 
+-- | Send an image in the response body. Also
+-- sets @Content-Type@ header to @image/{imgType}
+-- e.g. image/svg+xml
+image :: ByteString -> ByteString -> WebbyM appEnv ()
+image bs imgType = do
+  setHeader (hContentType, "image/" <> imgType)
+  raw bs
+
 -- | Send a binary stream in the response body. Also
 -- sets @Content-Type@ header to @application/octet-stream@
 blob :: ByteString -> WebbyM appEnv ()
 blob bs = do
   setHeader (hContentType, "application/octet-stream")
+  raw bs
+
+-- | Send a binary stream in the response body. Doesn't
+-- set @Content-Type@ header
+raw :: ByteString -> WebbyM appEnv ()
+raw bs = do
   wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $
     \wr -> return $ wr {wrRespData = Right $ Bu.fromByteString bs}
