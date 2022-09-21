@@ -6,6 +6,7 @@ import qualified Data.ByteString.Lazy as LB
 import qualified Data.HashMap.Strict as H
 import qualified Data.List as L
 import qualified Data.Text as T
+import Network.Mime
 import qualified UnliftIO.Concurrent as Conc
 import qualified UnliftIO.Exception as E
 import Web.HttpApiData
@@ -126,11 +127,25 @@ requestBodyLength = do
 finish :: WebbyM appEnv a
 finish = E.throwIO FinishThrown
 
+-- | Send an image in the response body. Also
+-- sets @Content-Type@ header to @mimeType
+-- e.g. image/svg+xml
+image :: ByteString -> MimeType -> WebbyM appEnv ()
+image bs mimeType = do
+  setHeader (hContentType, mimeType)
+  raw bs
+
 -- | Send a binary stream in the response body. Also
 -- sets @Content-Type@ header to @application/octet-stream@
 blob :: ByteString -> WebbyM appEnv ()
 blob bs = do
   setHeader (hContentType, "application/octet-stream")
+  raw bs
+
+-- | Send a binary stream in the response body. Doesn't
+-- set @Content-Type@ header
+raw :: ByteString -> WebbyM appEnv ()
+raw bs = do
   wVar <- asksWEnv weResp
   Conc.modifyMVar_ wVar $
     \wr -> return $ wr {wrRespData = Right $ Bu.fromByteString bs}

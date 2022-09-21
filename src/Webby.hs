@@ -41,6 +41,8 @@ module Webby
     json,
     text,
     stream,
+    image,
+    raw,
 
     -- * Application
     mkWebbyApp,
