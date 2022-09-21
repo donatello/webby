@@ -6,6 +6,7 @@ import qualified Data.ByteString.Lazy as LB
 import qualified Data.HashMap.Strict as H
 import qualified Data.List as L
 import qualified Data.Text as T
+import Network.Mime
 import qualified UnliftIO.Concurrent as Conc
 import qualified UnliftIO.Exception as E
 import Web.HttpApiData
@@ -127,11 +128,11 @@ finish :: WebbyM appEnv a
 finish = E.throwIO FinishThrown
 
 -- | Send an image in the response body. Also
--- sets @Content-Type@ header to @image/{imgType}
+-- sets @Content-Type@ header to @mimeType
 -- e.g. image/svg+xml
-image :: ByteString -> ByteString -> WebbyM appEnv ()
-image bs imgType = do
-  setHeader (hContentType, "image/" <> imgType)
+image :: ByteString -> MimeType -> WebbyM appEnv ()
+image bs mimeType = do
+  setHeader (hContentType, mimeType)
   raw bs
 
 -- | Send a binary stream in the response body. Also

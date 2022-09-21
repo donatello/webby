@@ -80,6 +80,7 @@ common base-settings
     , unliftio-core ==0.2.*
     , unordered-containers >=0.2.9 && <0.3
     , wai ==3.2.*
+    , mime-types ==0.1.*
 
   mixins:              base hiding (Prelude)
 
