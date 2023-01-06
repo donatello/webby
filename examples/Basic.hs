@@ -22,17 +22,13 @@ appExceptionHandler appName (exception :: E.SomeException) = do
 newtype AppEnv = AppEnv Text
   deriving (Eq, Show)
 
--- To demonstrate that appEnv is avaliable via MonadReader interface and no
--- additional boiler-plate is required
+-- To demonstrate that appEnv is available via MonadReader interface without
+-- additional boiler-plate
 class HasAppName env where
   getAppName :: env -> Text
 
 instance HasAppName AppEnv where
   getAppName (AppEnv name) = name
-
-fetchAppName :: (HasAppName env, MonadReader env m, MonadIO m) => m Text
-fetchAppName = do
-  asks getAppName
 
 main :: IO ()
 main = do
@@ -55,9 +51,9 @@ main = do
                 text $ show val
             ),
           get
-            "/api/showAppName"
+            "/api/appName"
             ( do
-                appName <- fetchAppName
+                appName <- asks getAppName --appEnv is only an `ask` away
                 text appName
             ),
           get "/aaah" (liftIO $ E.throwString "oops!")
