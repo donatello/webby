@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ghc: ['8.4', '8.6', '8.8', '8.10', '9.0', '9.2']
+        ghc: ['8.4', '8.6', '8.8', '8.10', '9.0', '9.2', '9.4']
         cabal: ['latest']
         os: [ubuntu-latest, macOS-latest, windows-latest]
         exclude:
