@@ -1,8 +1,8 @@
 # Change log
 
-## Unreleased - To be v1.1.0
+## v1.1.1
 
-* Add the `image` function to return mime-typed responses.
+* Ensure support for GHC 9.4
 
 ## Older releases
 
