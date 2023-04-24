@@ -2,7 +2,7 @@
 
 ## v1.1.1
 
-* Ensure support for GHC 9.4
+- Ensure support for GHC 9.4
 
 ## Older releases
 
