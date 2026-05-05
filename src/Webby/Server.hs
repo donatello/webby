@@ -259,7 +259,9 @@ mkWebbyApp env wsc =
           runWebbyM wEnv $
             handler
               `E.catches` ( shortCircuitHandler
-                              <> fmap (\(WebbyExceptionHandler e) -> E.Handler e) (maybeToList exceptionHandlerMay)
+                              <> fmap
+                                (\(WebbyExceptionHandler e) -> E.Handler e)
+                                (maybeToList exceptionHandlerMay)
                           )
           webbyReply wEnv respond
         )
