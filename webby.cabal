@@ -51,8 +51,11 @@ common base-settings
   if impl(ghc >= 8.8)
     ghc-options:       -Wmissing-deriving-strategies
                        -Werror=missing-deriving-strategies
-  if impl(ghc >= 8.10)
-    ghc-options:       -Wunused-packages
+  -- -Wunused-packages is intentionally NOT enabled: combined with
+  -- `mixins: base hiding (Prelude)` below, GHC can't see uses of the
+  -- base-<ver> package-id (imports go through the mixin alias), so it
+  -- spuriously flags base as unused. Confirmed still firing on GHC 9.6.7,
+  -- 9.8.4, 9.10.3, and 9.12.4 (cabal 3.14.2.0). See GHC issue #19518.
   if impl(ghc >= 9.0)
     ghc-options:       -Winvalid-haddock
   if impl(ghc >= 9.2)
@@ -85,7 +88,7 @@ common base-settings
     , base >=4.7 && <5
     , binary >=0.8 && <1
     , bytestring >=0.10 && <1
-    , formatting >=6.3.7 && <7.2
+    , formatting >=6.3.7 && <7.3
     , http-api-data >=0.4 && <0.6
     , http-types ==0.12.*
     , relude >=0.7
@@ -128,7 +131,7 @@ Flag examples
   Manual: True
 
 common examples-settings
-  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N -O2
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
   build-depends:       base >= 4.7 && < 5
