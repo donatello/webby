@@ -1,4 +1,6 @@
+import AppTests (appTests)
 import qualified Data.HashMap.Strict as H
+import ErrorTests (errorTests)
 import Network.Wai.Internal
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit ((@?=))
@@ -11,7 +13,7 @@ main :: IO ()
 main = defaultMain tests
 
 tests :: TestTree
-tests = testGroup "Webby Tests" [matchRequestTests]
+tests = testGroup "Webby Tests" [matchRequestTests, errorTests, appTests]
 
 matchRequestTests :: TestTree
 matchRequestTests = testGroup "matchRequest" [unitTests]

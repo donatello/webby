@@ -115,14 +115,23 @@ test-suite webby-test
       base-settings
   type: exitcode-stdio-1.0
   main-is: Spec.hs
+  other-modules:
+      AppTests
+      ErrorTests
+      Webby
   hs-source-dirs:
       src
       test
   ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      tasty
+      bytestring
+    , http-types
+    , tasty
     , tasty-hunit
     , tasty-quickcheck
+    , text
+    , wai
+    , wai-extra
     , webby
 
 Flag examples
