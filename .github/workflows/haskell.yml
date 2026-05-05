@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ghc: ['8.4', '8.6', '8.8', '8.10', '9.0', '9.2', '9.4']
+        ghc: ['8.4', '8.6', '8.8', '8.10', '9.0', '9.2', '9.4', '9.6', '9.8', '9.10', '9.12']
         cabal: ['latest']
         os: [ubuntu-latest, macOS-latest, windows-latest]
         exclude:
@@ -29,16 +29,23 @@ jobs:
             os: 'windows-latest'
           - ghc: '8.10'
             os: 'windows-latest'
+          # macOS-latest is arm64; no official GHC bindists before 9.0
+          - ghc: '8.4'
+            os: 'macOS-latest'
+          - ghc: '8.6'
+            os: 'macOS-latest'
+          - ghc: '8.8'
+            os: 'macOS-latest'
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: haskell/actions/setup@v2
+    - uses: actions/checkout@v4
+    - uses: haskell-actions/setup@v2
       with:
         ghc-version: ${{ matrix.ghc }}
         cabal-version: ${{ matrix.cabal }}
 
     - name: Cache ~/.cabal/packages, ~/.cabal/store and dist-newstyle
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.cabal/packages
