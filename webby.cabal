@@ -86,7 +86,7 @@ common base-settings
     , formatting >=6.3.7 && <8
     , http-api-data >=0.4 && <1
     , http-types ==0.12.*
-    , relude >=0.7
+    , relude >=0.7 && <2
     , resourcet ==1.2.*
     , text >=1.2 && <3
     , unliftio >=0.2.13 && <0.3
@@ -135,14 +135,14 @@ Flag examples
   Manual: True
 
 common examples-settings
-  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N -O2
+  ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
   default-extensions:  OverloadedStrings
   build-depends:       base >= 4.15 && < 5
                      , http-types
                      , relude
                      , text
-                     , warp
+                     , warp < 4
                      , webby
                      , unliftio
                      , unordered-containers
