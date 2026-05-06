@@ -87,7 +87,7 @@ common base-settings
     , http-api-data >=0.4 && <1
     , http-types ==0.12.*
     , relude >=0.7 && <2
-    , resourcet ==1.2.*
+    , resourcet >=1.2 && <1.4
     , text >=1.2 && <3
     , unliftio >=0.2.13 && <0.3
     , unliftio-core ==0.2.*
