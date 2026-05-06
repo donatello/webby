@@ -1,5 +1,9 @@
 # Change log
 
+## v1.2.1
+
+- Relax `resourcet` upper bound to `<1.4` to allow `resourcet-1.3`.
+
 ## v1.2.0
 
 - Drop support for GHC < 9.0.
